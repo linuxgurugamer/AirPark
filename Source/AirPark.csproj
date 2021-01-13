@@ -33,9 +33,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AirParkPartModule.cs" />
+    <Compile Include="AirParkPartModuleVesselModuleVersion.cs" />
+    <Compile Include="AirParkToolBarVesselModuleVersion.cs" />
     <Compile Include="AirParkToolBar.cs" />
-    <Compile Include="AirParkToolBarOrig.cs" />
     <Compile Include="AirParkVesselModule.cs" />
     <Compile Include="APVesselModule.cs" />
     <Compile Include="AssemblyVersion.cs">
@@ -44,9 +44,10 @@
       <DependentUpon>AssemblyVersion.tt</DependentUpon>
     </Compile>
     <Compile Include="InstallChecker.cs" />
-    <Compile Include="OrigAirParkPartModule.cs" />
+    <Compile Include="AirParkPartModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterToolbar.cs" />
+    <Compile Include="StockSettings.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +59,9 @@
     </Reference>
     <Reference Include="ClickThroughBlocker">
       <HintPath>$(KSPDIR)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceTuxUtility">
+      <HintPath>R:\KSP_1.10.1_dev\GameData\SpaceTuxLibrary\Plugins\SpaceTuxUtility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">

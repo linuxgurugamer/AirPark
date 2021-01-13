@@ -1,5 +1,12 @@
 Change Log
 
+1.7.1.1
+	Removed static instance reference to part, necessary to allow multiple craft to have the module loaded
+	Really fixed bug where leaving game and returning would be at 0 altitude
+	Fixed autopark on/off
+	Moved autopark setting into stock settings page
+	Deleted old commented code
+
 1.7.1
 	Updated for KSP 1.10.1
 	Added AssemblyVersion.tt
@@ -8,6 +15,7 @@ Change Log
 	Added support for ClickThroughBlocker
 	Made window draggable
 	Enabled toolbar button to change color when autopark is enabled
+	Fixed bug where when leaving scene (to spacecenter) and returning, would be at 0 altitude (confirmed in 1.4.5)
 	Added new dependencies
 		ToolbarController
 		ClickthroughBlocker

@@ -6,16 +6,15 @@ using UnityEngine;
 using KSP.UI.Screens;
 using ToolbarControl_NS;
 using ClickThroughFix;
+using SpaceTuxUtility;
 
 namespace AirPark
 {
-#if false
-    [KSPAddon(KSPAddon.Startup.Flight, false)]
-    internal class AirParkToolbar : MonoBehaviour
-    {
-        APVesselModule apvm;
-        Vessel lastVessel;
+#if true
 
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    class AirParkToolbar : MonoBehaviour
+    {
         internal const string MODID = "AirPark";
         internal const string MODNAME = "AirPark";
         static internal ToolbarControl toolbarControl = null;
@@ -25,16 +24,21 @@ namespace AirPark
 
         Rect toolbarRect;
         float toolbarWidth = 280;
-        float toolbarHeight = 0;
+        float toolbarHeight = 110;
         float toolbarMargin = 6;
         float toolbarLineHeight = 20;
         float contentWidth;
         Vector2 toolbarPosition;
         Rect svRectScreenSpace;
-
+        AirPark activeVesselAirPark;
         void VesselChange(Vessel v)
         {
-            if (!v.isActiveVessel) return;
+            if (!v.isActiveVessel)
+            {
+                activeVesselAirPark = null;
+                return;
+            }
+            activeVesselAirPark = FlightGlobals.ActiveVessel.FindPartModuleImplementing<AirPark>();
         }
 
         void Start()
@@ -45,14 +49,22 @@ namespace AirPark
 
             AddToolbarButton();
 
+            activeVesselAirPark = FlightGlobals.ActiveVessel.FindPartModuleImplementing<AirPark>();
             GameEvents.onVesselChange.Add(VesselChange);
         }
 
+        GUIStyle centerLabelStyle = null;
+        int winId = SpaceTuxUtility.WindowHelper.NextWindowId("AirParkToolbar");
         void OnGUI()
         {
             if (toolbarGuiEnabled) //&& AirParkPM.instance)
             {
-                toolbarRect = ClickThruBlocker.GUIWindow(999666, toolbarRect, ToolbarWindow, "AirPark", HighLogic.Skin.window);
+                if (centerLabelStyle == null)
+                    centerLabelStyle = new GUIStyle(HighLogic.Skin.label) { alignment = TextAnchor.UpperCenter };
+
+                if (!HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().altskin)
+                    GUI.skin = HighLogic.Skin;
+                toolbarRect = ClickThruBlocker.GUILayoutWindow(winId, toolbarRect, ToolbarWindow, "AirPark");
             }
         }
 
@@ -62,56 +74,65 @@ namespace AirPark
             line += 1.25f;
 
             if (!FlightGlobals.ActiveVessel) { return; }
-            if (lastVessel != FlightGlobals.ActiveVessel)
+
+            if (activeVesselAirPark)
             {
-                apvm = FlightGlobals.ActiveVessel.FindVesselModuleImplementing<APVesselModule>();
-                lastVessel = FlightGlobals.ActiveVessel;
-            }
-            if (!apvm.Parked)
-            {
-                if (GUI.Button(LineRect(ref line, 1.5f), "Park Vessel", HighLogic.Skin.button))
+                if (!activeVesselAirPark.Parked)
                 {
-                    if (!FlightGlobals.ActiveVessel.Landed)
-                        apvm.TogglePark();
-                    else
-                        ScreenMessages.PostScreenMessage("Cannot Park While Landed", 5.0f, ScreenMessageStyle.UPPER_CENTER);
+                    if (GUILayout.Button("Park Vessel", GUILayout.Height(20 * 1.5f)))
+                    {
+                        if (FlightGlobals.ActiveVessel && !FlightGlobals.ActiveVessel.Landed)
+                            activeVesselAirPark.TogglePark();
+                    }
+
+                }
+                else
+                {
+                    if (GUILayout.Button("Un-Park", GUILayout.Height(20 * 2f)))
+                    {
+                        activeVesselAirPark.TogglePark();
+                    }
+                }
+
+                line += 0.2f;
+                Rect spawnVesselRect = LineRect(ref line);
+                svRectScreenSpace = new Rect(spawnVesselRect);
+                svRectScreenSpace.x += toolbarRect.x;
+                svRectScreenSpace.y += toolbarRect.y;
+
+                if (!HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().autoPark)
+                {
+                    if (GUILayout.Button("Auto-Park OFF", GUILayout.Height(spawnVesselRect.height)))
+                    {
+                        HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().autoPark = true;
+                        SetAutoParkTexture();
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button("Auto-Park ON", GUILayout.Height(spawnVesselRect.height)))
+                    {
+                        HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().autoPark = false;
+                        SetAutoParkTexture();
+                    }
                 }
             }
             else
             {
-                if (GUI.Button(LineRect(ref line, 2), "Un-Park", HighLogic.Skin.button))
-                {
-                    apvm.TogglePark();
-                }
+                GUILayout.Label("No AirPark Module Found", centerLabelStyle);
             }
 
-            line += 0.2f;
-            Rect spawnVesselRect = LineRect(ref line);
-            svRectScreenSpace = new Rect(spawnVesselRect);
-            svRectScreenSpace.x += toolbarRect.x;
-            svRectScreenSpace.y += toolbarRect.y;
-
-            if (!APVesselModule.autoPark)
-            {
-                if (GUI.Button(spawnVesselRect, "Auto-Park OFF", HighLogic.Skin.button))
-                {
-                    apvm.ToggleAutoPark();
-                    toolbarControl.SetTexture("AirPark/PluginData/Icon/AirParkOn", "AirPark/PluginData/Icon/AirParkOn");
-                }
-
-            }
-            else
-            {
-                if (GUI.Button(spawnVesselRect, "Auto-Park ON", HighLogic.Skin.button))
-                {
-                    apvm.ToggleAutoPark();
-                    toolbarControl.SetTexture("AirPark/PluginData/Icon/AirPark", "AirPark/PluginData/Icon/AirPark");
-                }
-            }
-
-            toolbarRect.height = (line * toolbarLineHeight) + (toolbarMargin * 2);
             GUI.DragWindow();
         }
+
+        internal static void SetAutoParkTexture()
+        {
+            if (HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().autoPark == false)
+                toolbarControl.SetTexture("AirPark/PluginData/Icon/AirPark", "AirPark/PluginData/Icon/AirPark");
+            else
+                toolbarControl.SetTexture("AirPark/PluginData/Icon/AirParkOn", "AirPark/PluginData/Icon/AirParkOn");
+        }
+
 
         Rect LineRect(ref float currentLine, float heightFactor = 1)
         {
@@ -153,6 +174,16 @@ namespace AirPark
         public void HideToolbarGUI()
         {
             AirParkToolbar.toolbarGuiEnabled = false;
+        }
+
+        public static bool MouseIsInRect(Rect rect)
+        {
+            return rect.Contains(MouseGUIPos());
+        }
+
+        public static Vector2 MouseGUIPos()
+        {
+            return new Vector3(Input.mousePosition.x, Screen.height - Input.mousePosition.y, 0);
         }
     }
 #endif
