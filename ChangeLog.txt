@@ -1,11 +1,16 @@
 Change Log
 
+1.7.1.2
+	Fixed agent title
+	Resized buttons for both toolbars
+
 1.7.1.1
 	Removed static instance reference to part, necessary to allow multiple craft to have the module loaded
 	Really fixed bug where leaving game and returning would be at 0 altitude
 	Fixed autopark on/off
 	Moved autopark setting into stock settings page
 	Deleted old commented code
+	Added new dependency:  SpaceTuxLibrary
 
 1.7.1
 	Updated for KSP 1.10.1

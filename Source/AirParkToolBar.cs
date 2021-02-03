@@ -128,9 +128,9 @@ namespace AirPark
         internal static void SetAutoParkTexture()
         {
             if (HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().autoPark == false)
-                toolbarControl.SetTexture("AirPark/PluginData/Icon/AirPark", "AirPark/PluginData/Icon/AirPark");
+                toolbarControl.SetTexture("AirPark/PluginData/Icon/AirPark-38", "AirPark/PluginData/Icon/AirPark-24");
             else
-                toolbarControl.SetTexture("AirPark/PluginData/Icon/AirParkOn", "AirPark/PluginData/Icon/AirParkOn");
+                toolbarControl.SetTexture("AirPark/PluginData/Icon/AirParkOn-38", "AirPark/PluginData/Icon/AirParkOn-24");
         }
 
 
@@ -157,8 +157,8 @@ namespace AirPark
                         ApplicationLauncher.AppScenes.FLIGHT,
                         MODID,
                         "airparkButton",
-                        "AirPark/PluginData/Icon/AirPark",
-                        "AirPark/PluginData/Icon/AirPark",
+                        "AirPark/PluginData/Icon/AirPark-38",
+                        "AirPark/PluginData/Icon/AirPark-24",
                         MODNAME
                     );
 
