@@ -1,5 +1,9 @@
 Change Log
 
+1.7.1.4
+	Added AssemblyFileVersion
+	Updated version file for KSP 1.12
+
 1.7.1.3
 	Restored missing icons (toolbar)
 
