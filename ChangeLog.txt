@@ -1,5 +1,8 @@
 Change Log
 
+1.7.1.5
+	Added script to add AirPark module to all parts with ModuleCommand
+
 1.7.1.4
 	Added AssemblyFileVersion
 	Updated version file for KSP 1.12
