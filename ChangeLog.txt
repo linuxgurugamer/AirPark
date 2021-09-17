@@ -1,5 +1,9 @@
 Change Log
 
+1.7.1.6
+	Fixed name of settings page
+	Added option to allow parking while suborbital
+
 1.7.1.5
 	Added script to add AirPark module to all parts with ModuleCommand
 

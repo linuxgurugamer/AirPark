@@ -19,8 +19,8 @@ namespace AirPark
     {
         public override string Title { get { return ""; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
-        public override string Section { get { return "KerBalloons"; } }
-        public override string DisplaySection { get { return "KerBalloons"; } }
+        public override string Section { get { return "AirPark"; } }
+        public override string DisplaySection { get { return "AirPark"; } }
         public override int SectionOrder { get { return 1; } }
         public override bool HasPresets { get { return false; } }
 
@@ -32,6 +32,11 @@ namespace AirPark
         [GameParameters.CustomParameterUI("Alternate Skin",
             toolTip = "Use alternate skin")]
         public bool altskin = false;
+
+
+        [GameParameters.CustomParameterUI("Allow Suborbital Parking",
+            toolTip = "Allow vessels that are suborbital to be parked")]
+        public bool allowSuborbitalParking = false;
 
 
 
