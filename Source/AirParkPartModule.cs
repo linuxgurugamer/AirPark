@@ -102,6 +102,7 @@ namespace AirPark
         #endregion
 
         #region GameEvents
+#if false
         public override void OnStart(StartState state)
         {
             if (state != StartState.Editor && vessel != null)
@@ -109,6 +110,7 @@ namespace AirPark
                 part.force_activate();
             }
         }
+
         public override void OnSave(ConfigNode node)
         {
             base.OnSave(node);
@@ -119,6 +121,7 @@ namespace AirPark
             }
 
         }
+#endif
 
         public void FixedUpdate()
         {
@@ -131,7 +134,7 @@ namespace AirPark
 
             vesselSituation = vessel.situation.ToString();
 
-            #region can't Park if we're orbitingParkPosition
+        #region can't Park if we're orbitingParkPosition
             if ((HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().allowSuborbitalParking && vessel.situation == Vessel.Situations.SUB_ORBITAL)
                 && vessel.situation == Vessel.Situations.ORBITING)
             {
@@ -139,9 +142,9 @@ namespace AirPark
                 Parked = false;
                 ScreenMessages.PostScreenMessage("Cannot Park While Sub-Orbital or Orbital", 5.0f, ScreenMessageStyle.UPPER_CENTER);
             }
-            #endregion
+        #endregion
 
-            #region If we are the Inactive Vessel and AutoPark is set
+        #region If we are the Inactive Vessel and AutoPark is set
             if (!vessel.isActiveVessel & HighLogic.CurrentGame.Parameters.CustomParams<AirParkSettings>().autoPark)
             {
                 //ParkPosition = vessel.GetWorldPos3D();
@@ -158,16 +161,16 @@ namespace AirPark
                     ParkVessel();
                 }
             }
-            #endregion
+        #endregion
 
-            #region if we're not Parked, and not active and flying, then go off rails
+        #region if we're not Parked, and not active and flying, then go off rails
             // I dont think it matters if we are flying when I remember previous state - gomker
             //if (!vessel.isActiveVessel & Parked==false & vessel.situation == Vessel.Situations.FLYING)
             //{
             //    vessel.GoOffRails();
             //    RestoreVesselState();
             //}
-            #endregion
+        #endregion
 
             //If Parked is True, Park the Vessel
             if (Parked)
@@ -177,7 +180,7 @@ namespace AirPark
 
         }
 
-        #endregion
+#endregion
 
         #region vessel states
         private void RememberPreviousState()
@@ -250,4 +253,4 @@ namespace AirPark
         #endregion
     }
 #endif
-}
+    }
