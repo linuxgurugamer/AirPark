@@ -74,7 +74,12 @@ namespace AirPark
             {
                 if (!Parked)
                 {
-                    ParkPosition = vessel.vesselTransform.position;
+                    Debug.Log("AirPark, vessel.orbitDriver.pos: " + vessel.orbitDriver.pos +
+                        ", vesselTransform.position: " + vessel.vesselTransform.position);
+
+                    //ParkPosition = vessel.vesselTransform.position;
+                    ParkPosition = GetVesselPosition();
+
                     ParkAltitude = Altitude;
 
                     //we only want to remember the initial velocity, not subseqent updates by onFixedUpdate()
@@ -128,7 +133,9 @@ namespace AirPark
             if (!HighLogic.LoadedSceneIsFlight) { return; }
             if (Parked)
             {
-                vessel.SetPosition(ParkPosition);
+                //vessel.SetPosition(ParkPosition, true);
+                setVesselPosition();
+
             }
             if (vessel == null | !vessel.isActiveVessel) { return; }
 
@@ -157,7 +164,8 @@ namespace AirPark
                 // if we're farther than 2km, auto Park if needed
                 if ((vessel.GetWorldPos3D() - FlightGlobals.ActiveVessel.GetWorldPos3D()).magnitude > 2000.0f & Parked == false)
                 {
-                    ParkPosition = vessel.vesselTransform.position;
+                    //ParkPosition = vessel.vesselTransform.position;
+                    ParkPosition = GetVesselPosition();
                     ParkVessel();
                 }
             }
@@ -242,15 +250,56 @@ namespace AirPark
         public double Longitude { get; set; }
         public double Altitude { get; set; }
         public double alt;
-        public Vector3d teleportPosition;
+        //public Vector3d teleportPosition;
 
         private void setVesselPosition()
         {
             vessel.IgnoreGForces(240);
-            //vessel.orbitDriver.pos = ParkPosition;
-            vessel.vesselTransform.position = ParkPosition;
+            vessel.orbitDriver.pos = ParkPosition;
+            //vessel.vesselTransform.position = ParkPosition;
         }
         #endregion
+
+
+        #region Postion
+        //Code Adapted from Hyperedit landing functions 
+        //https://github.com/Ezriilc/HyperEdit
+
+        public static Vector3d teleportPosition;
+
+        public void SetAltitudeToCurrent()
+        {
+            var pqs = Body.pqsController;
+            if (pqs == null)
+            {
+                Destroy(this);
+                return;
+            }
+            var alt = pqs.GetSurfaceHeight(QuaternionD.AngleAxis(Longitude, Vector3d.down) * QuaternionD.AngleAxis(Latitude, Vector3d.forward) * Vector3d.right) - pqs.radius;
+            //alt = Math.Max(alt, 0); // No need for underwater check, allow park subs
+            Altitude = GetComponent<Vessel>().altitude - alt;
+        }
+
+        public  Vector3d GetVesselPosition()
+        {
+            var pqs = vessel.mainBody.pqsController;
+            if (pqs == null)
+            {
+                //Destroy(this);
+                return zeroVector;
+            }
+
+            alt = pqs.GetSurfaceHeight(vessel.mainBody.GetRelSurfaceNVector(Latitude, Longitude)) - vessel.mainBody.Radius;
+            alt = Math.Max(alt, 0); // Underwater!
+
+            teleportPosition = vessel.mainBody.GetRelSurfacePosition(Latitude, Longitude, alt + Altitude);
+            var a = vessel.mainBody.GetWorldSurfacePosition(Latitude, Longitude, alt+Altitude);
+            
+            return teleportPosition;
+        }
+
+        #endregion
+
     }
 #endif
-    }
+}

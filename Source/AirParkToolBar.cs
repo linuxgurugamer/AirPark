@@ -52,6 +52,10 @@ namespace AirPark
             activeVesselAirPark = FlightGlobals.ActiveVessel.FindPartModuleImplementing<AirPark>();
             GameEvents.onVesselChange.Add(VesselChange);
         }
+        void OnDestroy()
+        {
+            GameEvents.onVesselChange.Remove(VesselChange);
+        }
 
         GUIStyle centerLabelStyle = null;
         int winId = SpaceTuxUtility.WindowHelper.NextWindowId("AirParkToolbar");
